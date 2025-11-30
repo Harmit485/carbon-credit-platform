@@ -1,0 +1,42 @@
+# Root-level .gitignore for carbon-credit-platform
+# -------------------------------------------------
+# OS / editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+*.tmp
+
+# Node / JavaScript
+node_modules/
+/dist/
+/build/
+*.local
+
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+*.project
+*.classpath
+
+# Environment files (credentials, secrets)
+.env
+.env.*
+*.env
+# Specific env files that may be tracked
+server/.env
+client/.env.local
+client/.env.production
+client/.env.development
+
+# Miscellaneous
+coverage/
+*.sqlite3
+*.db
+
+# End of .gitignore
