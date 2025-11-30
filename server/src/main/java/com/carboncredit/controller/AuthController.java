@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping({ "/api/auth", "/auth" })
 public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
