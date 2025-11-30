@@ -11,7 +11,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/pricing")
+@RequestMapping({ "/api/pricing", "/pricing" })
 public class PricingController {
 
     @Autowired
@@ -31,19 +31,19 @@ public class PricingController {
     public DynamicPriceResponse getDynamicPrice(
             @RequestParam(defaultValue = "100.0") double basePrice,
             @RequestParam(defaultValue = "0.1") double sensitivityFactor) {
-        
+
         DynamicPriceResponse response = new DynamicPriceResponse();
-        
+
         // Calculate total demand (credits needed by buyers)
         double totalDemand = calculateTotalDemand();
-        
+
         // Calculate total supply (available credits for sale)
         double totalSupply = calculateTotalSupply();
-        
+
         response.setBasePrice(basePrice);
         response.setTotalDemand(totalDemand);
         response.setTotalSupply(totalSupply);
-        
+
         // Calculate dynamic price using the formula: P = P0 * (1 + α * (D/S - 1))
         if (totalSupply > 0) {
             double priceMultiplier = 1 + sensitivityFactor * (totalDemand / totalSupply - 1);
@@ -51,7 +51,7 @@ public class PricingController {
         } else {
             response.setDynamicPrice(basePrice);
         }
-        
+
         return response;
     }
 
@@ -94,17 +94,37 @@ public class PricingController {
         private double dynamicPrice;
 
         // Getters and setters
-        public double getBasePrice() { return basePrice; }
-        public void setBasePrice(double basePrice) { this.basePrice = basePrice; }
+        public double getBasePrice() {
+            return basePrice;
+        }
 
-        public double getTotalDemand() { return totalDemand; }
-        public void setTotalDemand(double totalDemand) { this.totalDemand = totalDemand; }
+        public void setBasePrice(double basePrice) {
+            this.basePrice = basePrice;
+        }
 
-        public double getTotalSupply() { return totalSupply; }
-        public void setTotalSupply(double totalSupply) { this.totalSupply = totalSupply; }
+        public double getTotalDemand() {
+            return totalDemand;
+        }
 
-        public double getDynamicPrice() { return dynamicPrice; }
-        public void setDynamicPrice(double dynamicPrice) { this.dynamicPrice = dynamicPrice; }
+        public void setTotalDemand(double totalDemand) {
+            this.totalDemand = totalDemand;
+        }
+
+        public double getTotalSupply() {
+            return totalSupply;
+        }
+
+        public void setTotalSupply(double totalSupply) {
+            this.totalSupply = totalSupply;
+        }
+
+        public double getDynamicPrice() {
+            return dynamicPrice;
+        }
+
+        public void setDynamicPrice(double dynamicPrice) {
+            this.dynamicPrice = dynamicPrice;
+        }
     }
 
     public static class CreditsCalculationRequest {
@@ -112,11 +132,21 @@ public class PricingController {
         private double allowedLimit;
 
         // Getters and setters
-        public double getActualEmissions() { return actualEmissions; }
-        public void setActualEmissions(double actualEmissions) { this.actualEmissions = actualEmissions; }
+        public double getActualEmissions() {
+            return actualEmissions;
+        }
 
-        public double getAllowedLimit() { return allowedLimit; }
-        public void setAllowedLimit(double allowedLimit) { this.allowedLimit = allowedLimit; }
+        public void setActualEmissions(double actualEmissions) {
+            this.actualEmissions = actualEmissions;
+        }
+
+        public double getAllowedLimit() {
+            return allowedLimit;
+        }
+
+        public void setAllowedLimit(double allowedLimit) {
+            this.allowedLimit = allowedLimit;
+        }
     }
 
     public static class CreditsUsageRequest {
@@ -124,10 +154,20 @@ public class PricingController {
         private double creditsNeeded;
 
         // Getters and setters
-        public double getCreditsBought() { return creditsBought; }
-        public void setCreditsBought(double creditsBought) { this.creditsBought = creditsBought; }
+        public double getCreditsBought() {
+            return creditsBought;
+        }
 
-        public double getCreditsNeeded() { return creditsNeeded; }
-        public void setCreditsNeeded(double creditsNeeded) { this.creditsNeeded = creditsNeeded; }
+        public void setCreditsBought(double creditsBought) {
+            this.creditsBought = creditsBought;
+        }
+
+        public double getCreditsNeeded() {
+            return creditsNeeded;
+        }
+
+        public void setCreditsNeeded(double creditsNeeded) {
+            this.creditsNeeded = creditsNeeded;
+        }
     }
 }

@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping({ "/api/migrations", "/migrations" })
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class MigrationController {
 

@@ -17,7 +17,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/retirements")
+@RequestMapping({ "/api/retirements", "/retirements" })
 public class RetirementController {
 
     @Autowired

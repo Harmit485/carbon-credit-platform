@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/credits")
+@RequestMapping({ "/api/credits", "/credits" })
 public class CarbonCreditController {
     @Autowired
     private CarbonCreditRepository carbonCreditRepository;

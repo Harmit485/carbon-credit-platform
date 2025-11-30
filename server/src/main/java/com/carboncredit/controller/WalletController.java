@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/wallet")
+@RequestMapping({ "/api/wallet", "/wallet" })
 public class WalletController {
 
     @Autowired
