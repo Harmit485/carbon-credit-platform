@@ -1,23 +1,13 @@
-FROM eclipse-temurin:17-jdk-alpine
-
+# Build stage
+FROM maven:3.8.5-openjdk-17 AS build
 WORKDIR /app
+COPY server/pom.xml .
+COPY server/src ./src
+RUN mvn clean package -DskipTests
 
-# Copy Maven wrapper and pom.xml first for caching
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
-
-# Download dependencies (cached layer)
-RUN ./mvnw dependency:go-offline -B
-
-# Copy source code
-COPY src ./src
-
-# Build the jar (skip tests for faster builds)
-RUN ./mvnw clean package -DskipTests -B
-
-# Expose the port (Render will set $PORT at runtime)
+# Run stage
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-
-# Run the jar (wildcard matches the generated jar)
-ENTRYPOINT ["java","-jar","target/*.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
