@@ -54,6 +54,10 @@ const Dashboard = ({ user }) => {
 
   const isIssuer = useMemo(() => {
     const roles = (user?.roles || []).map((role) => role.toUpperCase());
+    // Admins should see the regular dashboard, not issuer dashboard
+    const isAdmin = roles.some((role) => ['ADMIN', 'ROLE_ADMIN'].includes(role));
+    if (isAdmin) return false;
+    
     return roles.some((role) =>
       ['ISSUER', 'ROLE_ISSUER', 'VERIFIER', 'ROLE_VERIFIER'].includes(role)
     );
