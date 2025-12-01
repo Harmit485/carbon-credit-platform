@@ -19,4 +19,6 @@ public interface TradeRepository extends MongoRepository<Trade, String> {
     List<Trade> findByBuyerIdOrSellerId(String buyerId, String sellerId);
 
     long countByExecutedAtBetween(java.time.LocalDateTime start, java.time.LocalDateTime end);
+
+    java.util.Optional<Trade> findTopByOrderByExecutedAtDesc();
 }

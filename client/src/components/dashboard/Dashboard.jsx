@@ -38,7 +38,7 @@ const Dashboard = ({ user }) => {
         setWallet({
           walletBalance: walletResponse.data.balance,
           carbonCreditBalance: walletResponse.data.carbonCreditBalance,
-          portfolioValue: walletResponse.data.carbonCreditBalance * 10
+          portfolioValue: statsResponse.data.portfolioValue || 0
         });
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
@@ -57,7 +57,7 @@ const Dashboard = ({ user }) => {
     // Admins should see the regular dashboard, not issuer dashboard
     const isAdmin = roles.some((role) => ['ADMIN', 'ROLE_ADMIN'].includes(role));
     if (isAdmin) return false;
-    
+
     return roles.some((role) =>
       ['ISSUER', 'ROLE_ISSUER', 'VERIFIER', 'ROLE_VERIFIER'].includes(role)
     );

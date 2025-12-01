@@ -13,7 +13,21 @@ public class PricingService {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private com.carboncredit.repository.TradeRepository tradeRepository;
+
+    private static final double BASE_PRICE = 10000.0;
     private static final double ALPHA = 0.1; // Sensitivity factor
+
+    /**
+     * Gets the last traded price.
+     * If no trades exist, returns the BASE_PRICE (10,000).
+     */
+    public double getLastTradedPrice() {
+        return tradeRepository.findTopByOrderByExecutedAtDesc()
+                .map(com.carboncredit.model.Trade::getPricePerUnit)
+                .orElse(BASE_PRICE);
+    }
 
     /**
      * Calculates the dynamic price based on Supply and Demand.

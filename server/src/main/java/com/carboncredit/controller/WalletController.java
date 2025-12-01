@@ -31,7 +31,12 @@ public class WalletController {
         Wallet wallet = walletRepository.findByUserId(userId);
 
         if (wallet == null) {
-            return ResponseEntity.notFound().build();
+            // Auto-create wallet if it doesn't exist
+            wallet = new Wallet();
+            wallet.setUserId(userId);
+            wallet.setBalance(0.0);
+            wallet.setCarbonCreditBalance(0.0);
+            wallet = walletRepository.save(wallet);
         }
 
         return ResponseEntity.ok(wallet);

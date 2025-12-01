@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+import java.util.HashMap;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping({ "/api/test", "/test" })
@@ -20,6 +23,16 @@ public class TestController {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @GetMapping("/health")
+    public ResponseEntity<?> healthCheck() {
+        Map<String, Object> status = new HashMap<>();
+        status.put("status", "UP");
+        status.put("timestamp", LocalDateTime.now());
+        status.put("version", "1.0.1");
+        status.put("message", "Backend is running and accessible");
+        return ResponseEntity.ok(status);
+    }
 
     @GetMapping("/users")
     public ResponseEntity<?> getAllUsers() {

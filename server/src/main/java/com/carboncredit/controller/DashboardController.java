@@ -39,6 +39,9 @@ public class DashboardController {
     @Autowired
     private RetirementRepository retirementRepository;
 
+    @Autowired
+    private com.carboncredit.service.PricingService pricingService;
+
     @GetMapping("/stats")
     @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> getDashboardStats() {
@@ -94,11 +97,17 @@ public class DashboardController {
 
             // User's wallet balance
             Wallet wallet = walletRepository.findByUserId(userId);
+            double creditBalance = 0.0;
             if (wallet != null) {
-                stats.setCreditBalance(wallet.getCarbonCreditBalance());
+                creditBalance = wallet.getCarbonCreditBalance();
+                stats.setCreditBalance(creditBalance);
             } else {
                 stats.setCreditBalance(0.0);
             }
+
+            // Calculate Portfolio Value
+            double lastTradedPrice = pricingService.getLastTradedPrice();
+            stats.setPortfolioValue(creditBalance * lastTradedPrice);
 
             // User's projects (if issuer)
             List<Project> userProjects = projectRepository.findByIssuerId(userId);
@@ -206,6 +215,7 @@ public class DashboardController {
 
     public static class UserDashboardStats {
         private double creditBalance;
+        private double portfolioValue;
         private int userProjectsCount;
         private int userCreditsCount;
         private int userTradesCount;
@@ -219,6 +229,14 @@ public class DashboardController {
 
         public void setCreditBalance(double creditBalance) {
             this.creditBalance = creditBalance;
+        }
+
+        public double getPortfolioValue() {
+            return portfolioValue;
+        }
+
+        public void setPortfolioValue(double portfolioValue) {
+            this.portfolioValue = portfolioValue;
         }
 
         public int getUserProjectsCount() {

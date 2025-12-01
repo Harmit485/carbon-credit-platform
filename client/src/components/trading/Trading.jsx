@@ -18,6 +18,7 @@ const Trading = ({ user }) => {
     quantity: 1,
     price: 10.00
   });
+  const [lastTradedPrice, setLastTradedPrice] = useState(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -58,9 +59,26 @@ const Trading = ({ user }) => {
       }
     };
 
+    const fetchDynamicPrice = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_BASE_URL}/pricing/dynamic-price`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.data && response.data.dynamicPrice) {
+          setLastTradedPrice(response.data.dynamicPrice);
+          // Optional: Set default price to last traded price
+          setTradeData(prev => ({ ...prev, price: response.data.dynamicPrice }));
+        }
+      } catch (error) {
+        console.error('Error fetching dynamic price:', error);
+      }
+    };
+
     fetchOrders();
     fetchMyOrders();
     fetchWallet();
+    fetchDynamicPrice();
   }, [activeTab]);
 
   const handleTradeChange = (e) => {
@@ -73,6 +91,17 @@ const Trading = ({ user }) => {
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
+
+    // Client-side validation for dynamic pricing
+    if (lastTradedPrice) {
+      const minPrice = lastTradedPrice * 0.9;
+      const maxPrice = lastTradedPrice * 1.1;
+      if (tradeData.price < minPrice || tradeData.price > maxPrice) {
+        alert(`Price must be within ±10% of the last traded price (₹${lastTradedPrice.toFixed(2)}). Allowed range: ₹${minPrice.toFixed(2)} - ₹${maxPrice.toFixed(2)}`);
+        return;
+      }
+    }
+
     try {
       const token = localStorage.getItem('token');
 
@@ -107,9 +136,17 @@ const Trading = ({ user }) => {
       });
       setWallet(walletResponse.data);
 
+      // Refresh price
+      const priceResponse = await axios.get(`${API_BASE_URL}/pricing/dynamic-price`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (priceResponse.data && priceResponse.data.dynamicPrice) {
+        setLastTradedPrice(priceResponse.data.dynamicPrice);
+      }
+
       alert(`${activeTab === 'buy' ? 'Buy' : 'Sell'} order placed successfully!`);
-      // Reset form
-      setTradeData({ quantity: 1, price: 10.00 });
+      // Reset form (keep price at last traded or current input? maybe reset to last traded)
+      // setTradeData({ quantity: 1, price: 10.00 }); 
     } catch (error) {
       console.error('Error placing order:', error);
       console.error('Error response:', error.response);
@@ -352,6 +389,12 @@ const Trading = ({ user }) => {
               onChange={handleTradeChange}
               required
             />
+            {lastTradedPrice && (
+              <div className="text-xs text-white/60">
+                <p>Last Traded Price: <span className="text-white font-medium">₹{lastTradedPrice.toFixed(2)}</span></p>
+                <p>Allowed Range: <span className="text-white font-medium">₹{(lastTradedPrice * 0.9).toFixed(2)} - ₹{(lastTradedPrice * 1.1).toFixed(2)}</span></p>
+              </div>
+            )}
             <Button
               type="submit"
               className="w-full"

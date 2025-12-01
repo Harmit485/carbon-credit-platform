@@ -20,6 +20,9 @@ public class PricingController {
     @Autowired
     private CarbonCreditRepository carbonCreditRepository;
 
+    @Autowired
+    private com.carboncredit.service.PricingService pricingService;
+
     // Fixed price model
     @GetMapping("/fixed-price")
     public double getFixedPrice(@RequestParam(defaultValue = "100.0") double basePrice) {
@@ -40,17 +43,21 @@ public class PricingController {
         // Calculate total supply (available credits for sale)
         double totalSupply = calculateTotalSupply();
 
-        response.setBasePrice(basePrice);
+        double lastTradedPrice = pricingService.getLastTradedPrice();
+
+        response.setBasePrice(lastTradedPrice);
         response.setTotalDemand(totalDemand);
         response.setTotalSupply(totalSupply);
 
-        // Calculate dynamic price using the formula: P = P0 * (1 + α * (D/S - 1))
-        if (totalSupply > 0) {
-            double priceMultiplier = 1 + sensitivityFactor * (totalDemand / totalSupply - 1);
-            response.setDynamicPrice(basePrice * priceMultiplier);
-        } else {
-            response.setDynamicPrice(basePrice);
-        }
+        // For the purpose of this requirement, the "Dynamic Price" is the Last Traded
+        // Price
+        // But we can also apply the supply/demand factor on top of it if we wanted to
+        // suggest a price.
+        // However, the user wants the TRADING to be constrained by the Last Traded
+        // Price.
+        // So let's return the Last Traded Price as the main price indicator.
+
+        response.setDynamicPrice(lastTradedPrice);
 
         return response;
     }

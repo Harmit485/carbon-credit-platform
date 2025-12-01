@@ -92,6 +92,17 @@ public class MarketplaceController {
             return ResponseEntity.badRequest().body("Order type is required.");
         }
 
+        // Validate price range (Dynamic Pricing Rule)
+        double lastTradedPrice = pricingService.getLastTradedPrice();
+        double minPrice = lastTradedPrice * 0.9;
+        double maxPrice = lastTradedPrice * 1.1;
+
+        if (order.getPricePerUnit() < minPrice || order.getPricePerUnit() > maxPrice) {
+            return ResponseEntity.badRequest().body(String.format(
+                    "Price must be within ±10%% of the last traded price (%.2f). Allowed range: %.2f - %.2f",
+                    lastTradedPrice, minPrice, maxPrice));
+        }
+
         try {
             if (order.getType() == Order.OrderType.SELL) {
                 // LOCK CREDITS: Reserve credits in Wallet
